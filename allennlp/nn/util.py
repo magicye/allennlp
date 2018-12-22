@@ -169,7 +169,7 @@ def get_final_encoder_states(encoder_outputs: torch.Tensor,
     Additionally, if ``bidirectional`` is ``True``, we will split the final dimension of the
     ``encoder_outputs`` into two and assume that the first half is for the forward direction of the
     encoder and the second half is for the backward direction.  We will concatenate the last state
-    for each encoder dimension, giving ``encoder_outputs[:, -1, :encoding_dim/2]`` concated with
+    for each encoder dimension, giving ``encoder_outputs[:, -1, :encoding_dim/2]`` concatenated with
     ``encoder_outputs[:, 0, encoding_dim/2:]``.
     """
     # These are the indices of the last words in the sequences (i.e. length sans padding - 1).  We
@@ -360,7 +360,7 @@ def viterbi_decode(tag_sequence: torch.Tensor,
     tag_observations : Optional[List[int]], optional, (default = None)
         A list of length ``sequence_length`` containing the class ids of observed
         elements in the sequence, with unobserved elements being set to -1. Note that
-        it is possible to provide evidence which results in degenerate labellings if
+        it is possible to provide evidence which results in degenerate labelings if
         the sequences of tags you provide as evidence cannot transition between each
         other, or those transitions are extremely unlikely. In this situation we log a
         warning, but the responsibility for providing self-consistent evidence ultimately
@@ -475,37 +475,6 @@ def get_text_field_mask(text_field_tensors: Dict[str, torch.Tensor],
         raise ValueError("Expected a tensor with dimension 2 or 3, found {}".format(smallest_dim))
 
 
-def last_dim_softmax(tensor: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
-    """
-    Takes a tensor with 3 or more dimensions and does a masked softmax over the last dimension.  We
-    assume the tensor has shape ``(batch_size, ..., sequence_length)`` and that the mask (if given)
-    has shape ``(batch_size, sequence_length)``.
-
-    .. deprecated:: 0.6.1
-           ``last_dim_softmax`` was deprecated in favor of just using ``masked_softmax`` in version
-           0.6.1.  It will be removed in version 0.8.
-    """
-    warnings.warn("``last_dim_softmax`` was deprecated in favor of just using ``masked_softmax`` "
-                  "in version 0.6.1.  It will be removed in version 0.8.", DeprecationWarning)
-    return masked_softmax(tensor, mask, dim=-1)
-
-
-def last_dim_log_softmax(tensor: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
-    """
-    Takes a tensor with 3 or more dimensions and does a masked log softmax over the last dimension.
-    We assume the tensor has shape ``(batch_size, ..., sequence_length)`` and that the mask (if given)
-    has shape ``(batch_size, sequence_length)``.
-
-    .. deprecated:: 0.6.1
-           ``last_dim_log_softmax`` was deprecated in favor of just using ``masked_log_softmax`` in
-           version 0.6.1.  It will be removed in version 0.8.
-    """
-    warnings.warn("``last_dim_log_softmax`` was deprecated in favor of just using "
-                  "``masked_log_softmax`` in version 0.6.1.  It will be removed in version 0.8.",
-                  DeprecationWarning)
-    return masked_log_softmax(tensor, mask, dim=-1)
-
-
 def weighted_sum(matrix: torch.Tensor, attention: torch.Tensor) -> torch.Tensor:
     """
     Takes a matrix of vectors and a set of weights over the rows in the matrix (which we call an
@@ -583,7 +552,7 @@ def sequence_cross_entropy_with_logits(logits: torch.FloatTensor,
         of losses per batch element.
     label_smoothing : ``float``, optional (default = None)
         Whether or not to apply label smoothing to the cross-entropy loss.
-        For example, with a label smoothing value of 0.2, a 4 class classifcation
+        For example, with a label smoothing value of 0.2, a 4 class classification
         target would look like ``[0.05, 0.05, 0.85, 0.05]`` if the 3rd class was
         the correct label.
 
